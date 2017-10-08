@@ -131,18 +131,18 @@ body {
     font: 22px 'Orbitron', sans-serif;
 }
 .op-list li:first-child::before {
-    content: '/';
+
 }
 .op-list li:nth-child(2)::before {
-    content: '*';
+
 }
 .op-list li:nth-child(3)::before {
-    content: '-';
+
 }
 .op-list li:nth-child(4)::before {
-    content: '+';
+
 }
 .op-list li:last-child::before {
-    content: '=';
+
 }
 

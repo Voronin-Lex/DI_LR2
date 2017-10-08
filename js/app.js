@@ -2,36 +2,54 @@ var numbers = document.querySelectorAll('.number'),
     operations = document.querySelectorAll('.operation'),
     clearBtns = document.querySelectorAll('.clear-btn'),
     decimalBtn = document.getElementById('decimal'),
-    howWorkBtn = document.getElementById('howWork'),
+    histBtn = document.getElementById('showHist'),
     display = document.getElementById('display'),
     operationsList = document.getElementById('operationsList'),
     MemoryCurrentNumber = 0,
     MemoryNewNumber = false,
-    MemoryPendingOperation = '';
+    firstNumber = true;
+MemoryPendingOperation = '';
 
-for (var i=0; i<numbers.length; i++) {
+var currentState = {
+    operation: "+",
+    firstOperand: "1",
+    secondOperand: "2",
+    result: "3",
+    operationCount: 0,
+
+    toStr: function () {
+        //this.firstOperand + " " + this.operation + " " + this.secondOperand + " = " +
+        return ( this.firstOperand + " " + this.operation + " " +
+        this.secondOperand + " = " + this.result);
+    }
+};
+
+for (var i = 0; i < numbers.length; i++) {
     var number = numbers[i];
-    number.addEventListener('click', function(e) {
+    number.addEventListener('click', function (e) {
         numberPress(e.target.textContent);
     });
-};
+}
+;
 
-for (var i=0; i<operations.length; i++) {
+for (var i = 0; i < operations.length; i++) {
     var operationBtn = operations[i];
-    operationBtn.addEventListener('click', function(e) {
+    operationBtn.addEventListener('click', function (e) {
         operation(e.target.textContent);
     });
-};
+}
+;
 
-for (var i=0; i<clearBtns.length; i++) {
+for (var i = 0; i < clearBtns.length; i++) {
     var clearBtn = clearBtns[i];
-    clearBtn.addEventListener('click', function(e) {
+    clearBtn.addEventListener('click', function (e) {
         clear(e.target.id);
     });
-};
+}
+;
 
 decimalBtn.addEventListener('click', decimal);
-howWorkBtn.addEventListener('click', howWork);
+//histBtn.addEventListener('click', showHist);
 
 function numberPress(number) {
     if (MemoryNewNumber) {
@@ -42,17 +60,20 @@ function numberPress(number) {
             display.value = number;
         } else {
             display.value += number;
-        };
-    };
+        }
+        ;
+    }
+    ;
 };
 
 function operation(op) {
     var localOperationMemory = display.value;
-
-    if (MemoryNewNumber && MemoryPendingOperation !== '=') {
+    if (MemoryNewNumber && MemoryPendingOperation !== '=') {   //чтобы начать показывать второе число
         display.value = MemoryCurrentNumber;
     } else {
         MemoryNewNumber = true;
+        currentState.firstOperand = (firstNumber ? localOperationMemory : MemoryCurrentNumber);
+        currentState.secondOperand = (firstNumber ? "" : localOperationMemory);
         if (MemoryPendingOperation === '+') {
             MemoryCurrentNumber += parseFloat(localOperationMemory);
         } else if (MemoryPendingOperation === '-') {
@@ -63,10 +84,17 @@ function operation(op) {
             MemoryCurrentNumber /= parseFloat(localOperationMemory);
         } else {
             MemoryCurrentNumber = parseFloat(localOperationMemory);
-        };
+        }
+        ;
+
+        currentState.result = MemoryCurrentNumber;
+        (firstNumber || MemoryPendingOperation === '=') ? firstNumber = false : appendOperation(currentState.toStr());
+
         display.value = MemoryCurrentNumber;
         MemoryPendingOperation = op;
-    };
+        currentState.operation = op;
+    }
+    ;
 };
 
 function decimal() {
@@ -76,31 +104,42 @@ function decimal() {
         localDecimalMemory = '0.';
         MemoryNewNumber = false;
     } else {
-        if (localDecimalMemory.indexOf('.') === -1 ) {
+        if (localDecimalMemory.indexOf('.') === -1) {
             localDecimalMemory += '.';
-        };
-    };
+        }
+        ;
+    }
+    ;
     display.value = localDecimalMemory;
 };
 
 function clear(id) {
+    appendOperation(id);
     if (id === 'ce') {
         display.value = '0';
         MemoryNewNumber = true;
     } else if (id === 'c') {
+        firstNumber = true;
         display.value = '0';
         MemoryNewNumber = true;
         MemoryCurrentNumber = 0;
         MemoryPendingOperation = '';
-    };
+        removeHistory();
+    }
+    ;
 };
 
-function howWork() {
-    for (var i=0; i<operations.length; i++) {
-        var newLi = document.createElement('li');
-        var operationText = operations[i].value;
-        newLi.innerText = operationText;
-        operationsList.appendChild(newLi);
-    };
+function removeHistory() {
+    while (operationsList.firstChild) {
+        operationsList.removeChild(operationsList.firstChild);
+    }
+}
+
+function appendOperation(element) {
+    var newLi = document.createElement('li');
+    newLi.innerText = element;
+    //console.log(newLi);
+    operationsList.appendChild(newLi);
+
 };
 
