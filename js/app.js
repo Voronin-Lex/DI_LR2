@@ -18,7 +18,6 @@ var currentState = {
     operationCount: 0,
 
     toStr: function () {
-        //this.firstOperand + " " + this.operation + " " + this.secondOperand + " = " +
         return ( this.firstOperand + " " + this.operation + " " +
         this.secondOperand + " = " + this.result);
     }
@@ -49,7 +48,15 @@ for (var i = 0; i < clearBtns.length; i++) {
 ;
 
 decimalBtn.addEventListener('click', decimal);
-//histBtn.addEventListener('click', showHist);
+histBtn.addEventListener('click', function (e) {
+    console.log(operationsList.style.display);
+    if (operationsList.style.display === "") {
+        operationsList.style.display = "table";
+    }
+    else {
+        operationsList.style = "";
+    }
+});
 
 function numberPress(number) {
     if (MemoryNewNumber) {
