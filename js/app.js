@@ -7,49 +7,11 @@ var numbers = document.querySelectorAll('.number'),
     operationsList = document.getElementById('operationsList'),
     MemoryCurrentNumber = 0,
     MemoryNewNumber = false,
-    firstNumber = true;
-MemoryPendingOperation = '';
-
-var currentState = {
-    operation: "+",
-    firstOperand: "1",
-    secondOperand: "2",
-    result: "3",
-    operationCount: 0,
-
-    toStr: function () {
-        return ( this.firstOperand + " " + this.operation + " " +
-        this.secondOperand + " = " + this.result);
-    }
-};
-
-for (var i = 0; i < numbers.length; i++) {
-    var number = numbers[i];
-    number.addEventListener('click', function (e) {
-        numberPress(e.target.textContent);
-    });
-}
-;
-
-for (var i = 0; i < operations.length; i++) {
-    var operationBtn = operations[i];
-    operationBtn.addEventListener('click', function (e) {
-        operation(e.target.textContent);
-    });
-}
-;
-
-for (var i = 0; i < clearBtns.length; i++) {
-    var clearBtn = clearBtns[i];
-    clearBtn.addEventListener('click', function (e) {
-        clear(e.target.id);
-    });
-}
-;
+    firstNumber = true,
+    MemoryPendingOperation = '';
 
 decimalBtn.addEventListener('click', decimal);
 histBtn.addEventListener('click', function (e) {
-    console.log(operationsList.style.display);
     if (operationsList.style.display === "") {
         operationsList.style.display = "table";
     }
@@ -57,6 +19,31 @@ histBtn.addEventListener('click', function (e) {
         operationsList.style = "";
     }
 });
+
+var currentState = {
+    operation: "",
+    firstOperand: "",
+    secondOperand: "",
+    result: "",
+    toStr: function () {
+        return ( this.firstOperand + " " + this.operation + " " +
+        this.secondOperand + " = " + this.result);
+    }
+};
+
+function addEventHandler(buttons, func) {
+
+    for( var i = 0; i<buttons.length; i++){
+        var btn = buttons[i];
+        btn.addEventListener("click", function (e) {
+            func(e.target.textContent);
+        })
+    }
+};
+
+addEventHandler(numbers, numberPress);
+addEventHandler(operations, operation);
+addEventHandler(clearBtns, clear);
 
 function numberPress(number) {
     if (MemoryNewNumber) {
@@ -98,8 +85,7 @@ function operation(op) {
         (firstNumber || MemoryPendingOperation === '=') ? firstNumber = false : appendOperation(currentState.toStr());
 
         display.value = MemoryCurrentNumber;
-        MemoryPendingOperation = op;
-        currentState.operation = op;
+        MemoryPendingOperation = currentState.operation =  op;
     }
     ;
 };
@@ -145,8 +131,6 @@ function removeHistory() {
 function appendOperation(element) {
     var newLi = document.createElement('li');
     newLi.innerText = element;
-    //console.log(newLi);
     operationsList.appendChild(newLi);
-
 };
 
